@@ -22,19 +22,23 @@ public class App {
 
     public static void main(String[] args) throws IOException {
 
-        File driverFile = args.length > 0 ? new File(args[0]): new File("chromedriver");
+        File driverFile = args.length > 0 ? new File(args[0]) : new File("src/main/resources/chromedriver");
 
         loadSeliniumService(driverFile);
 
         WebDriver driver = loadChromeDriver();
 
-        driver.get("http://google.com/ncr");
-        driver.findElement(By.name("q")).sendKeys("cheese" + Keys.ENTER);
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        WebElement firstResult = wait.until(presenceOfElementLocated(By.cssSelector("h3>a")));
-        if (firstResult.getText().toLowerCase().contains("cheese")) {
-            log.info("Chrome driver functionality verified.  Search result --> {}", firstResult.getText());
-            System.exit(0);
+        try {
+            driver.get("http://google.com/ncr");
+            driver.findElement(By.name("q")).sendKeys("cheese" + Keys.ENTER);
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            WebElement firstResult = wait.until(presenceOfElementLocated(By.cssSelector("h3>a")));
+            if (firstResult.getText().toLowerCase().contains("cheese")) {
+                log.info("Chrome driver functionality verified.  Search result --> {}", firstResult.getText());
+            }
+        } finally {
+            driver.quit();
+            service.stop();
         }
 
         throw new RuntimeException("Driver configuration error.");
